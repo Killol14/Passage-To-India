@@ -28,7 +28,7 @@ def get_tasks():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        # check if username already exists in db
+       
         existing_user = mongo.db.users.find_one(
             {"username": request.form.get("username").lower()})
 
@@ -42,7 +42,7 @@ def register():
         }
         mongo.db.users.insert_one(register)
 
-        # put the new user into 'session' cookie
+       
         session["user"] = request.form.get("username").lower()
         flash("Registration Successful!")
         return redirect(url_for("profile", username=session["user"]))
@@ -53,12 +53,12 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        # check if username exists in db
+        
         existing_user = mongo.db.users.find_one(
             {"username": request.form.get("username").lower()})
 
         if existing_user:
-            # ensure hashed password matches user input
+            
             if check_password_hash(
                     existing_user["password"], request.form.get("password")):
                         session["user"] = request.form.get("username").lower()
@@ -67,12 +67,12 @@ def login():
                         return redirect(url_for(
                             "profile", username=session["user"]))
             else:
-                # invalid password match
+                
                 flash("Incorrect Username and/or Password")
                 return redirect(url_for("login"))
 
         else:
-            # username doesn't exist
+            
             flash("Incorrect Username and/or Password")
             return redirect(url_for("login"))
 
@@ -81,7 +81,7 @@ def login():
 
 @app.route("/profile/<username>", methods=["GET", "POST"])
 def profile(username):
-    # grab the session user's username from db
+    # grab the session user's username 
     username = mongo.db.users.find_one(
         {"username": session["user"]})["username"]
 
@@ -112,7 +112,7 @@ def add_task():
             "created_by": session["user"]
         }
         mongo.db.tasks.insert_one(task)
-        flash("Task Successfully Added")
+        flash("Informations Successfully Added")
         return redirect(url_for("get_tasks"))
 
     categories = mongo.db.categories.find().sort("category_name", 1)
@@ -131,8 +131,9 @@ def edit_task(task_id):
             "due_date": request.form.get("due_date"),
             "created_by": session["user"]
         }
-        mongo.db.tasks.update({"_id": ObjectId(task_id)}, submit)
-        flash("Task Successfully Updated")
+        mongo.db.tasks.replace_one({"_id": ObjectId(task_id)}, submit)
+        flash("Informations Successfully Updated")
+        
 
     task = mongo.db.tasks.find_one({"_id": ObjectId(task_id)})
     categories = mongo.db.categories.find().sort("category_name", 1)
