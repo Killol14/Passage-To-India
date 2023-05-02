@@ -2,7 +2,7 @@
 {% block content %}
 
 
-<h3 class="light-blue-text text-darken-4 center-align">Add Travel Informations</h3>
+<h3 class=" indigo-text text-darken-4 center-align">Search and Add Travel Informations about India</h3>
 
 <div class="row card-panel grey lighten-5">
     <form action="{{ url_for('search') }}" method="post" class="col s12">
@@ -43,7 +43,7 @@
                 {% endif %}
             </div>
         </div>
-        <div class="collapsible-body">
+        <div class="collapsible-body white-text light-blue darken-1 text-shadow">
             <strong>{{ task.category_name }}</strong>
             <p>{{ task.task_description }}</p>
             <p><em>by: {{ task.created_by }}</em></p>
