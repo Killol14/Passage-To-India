@@ -1,7 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Welcome to the Dashboard</h1>
-  <p><a href="{{ url_for('add_map') }}">Add Map</a></p>
-  
-{% endblock %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Image</title>
+</head>
+<body>
+    <div class="upload">
+ <h1>Upload Image</h1>
+        <form action="/upload_image" method="post" enctype="multipart/form-data">
+            <label class="label" for="image">Choose an image file:</label>
+            <input  type="file" name="image" id="image">
+            <br>
+            <a href="{{ url_for('add_map') }}"
+             type="submit" class="btn-large light-blue darken-1 text-shadow upload">
+                Upload Map<i class="fa-solid fa-upload"></i>
+        </a>
+        </form> 
+    </div>
+</html>
+</body>
+{% endblock %}  
