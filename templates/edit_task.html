@@ -63,11 +63,28 @@
                                 <input type="checkbox" id="is_urgent" name="is_urgent">
                             {% endif %}
                             <span class="lever"></span>
-                            Is Urgent
+                            Must Visit
                         </label>
 					</div>
 				</div>
 			</div>
+
+            
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="fa-solid fa-image prefix light-blue-text text-darken-4"></i>
+                    <label for="add_image"><a href="{{ url_for('add_image') }}">Add Image</a></label>
+                </div>
+            </div>     
+                 
+        
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="fa-solid fa-map-location-dot prefix light-blue-text text-darken-4"></i>
+                    <label for="add_map"><a href="{{ url_for('add_map') }}">Add Map</a></label>
+                </div>
+            </div>
+
             <!-- submit button -->
             <div class="row">
                 <div class="col s12 center-align">

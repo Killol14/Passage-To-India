@@ -124,14 +124,53 @@ def add_task():
             "due_date": request.form.get("due_date"),
             "created_by": session["user"]
         }
+
+
         mongo.db.tasks.insert_one(task)
         flash("Task Successfully Added")
         return redirect(url_for("get_tasks"))
 
     categories = mongo.db.categories.find().sort("category_name", 1)
     return render_template("add_task.html", categories=categories)
+#------------------------------------------------------
+@app.route('/add-image', methods=['GET', 'POST'])
+def add_image():
+    if request.method == 'POST':
+        # Save the image to the database
+        image = request.files['image']
+        images.insert_one({"filename": image.filename, "data": image.read()})
+        return redirect(url_for('dashboard'))
+    else:
+        return render_template('add_image.html')
 
 
+def upload_image():
+    if request.method == 'POST':
+        # Get the uploaded image file
+        image = request.files['image']
+
+        # Store the image in MongoDB
+        image_data = image.read()
+        mongo.db.images.insert_one({'image': image_data}).inserted_id
+
+        # Display a success message
+        return 'Image uploaded with ID: ' + str(image_id)
+    else:
+        # Display the image upload form
+        return render_template("add_task.html", categories=categories)
+
+
+@app.route('/add-map', methods=['GET', 'POST'])
+def add_map():
+    if request.method == 'POST':
+        # Save the map coordinates to the database
+        lat = request.form['lat']
+        lng = request.form['lng']
+        maps.insert_one({"lat": lat, "lng": lng})
+        return redirect(url_for('dashboard'))
+    else:
+        return render_template('add_map.html')
+#----------------------------------------------------
 @app.route("/edit_task/<task_id>", methods=["GET", "POST"])
 def edit_task(task_id):
     if request.method == "POST":
@@ -144,6 +183,7 @@ def edit_task(task_id):
             "due_date": request.form.get("due_date"),
             "created_by": session["user"]
         }
+
         mongo.db.tasks.update({"_id": ObjectId(task_id)}, submit)
         flash("Task Successfully Updated")
 
