@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% for image in images %}
+    <img src="{{ image.image_url }}">
+{% endfor %}
+{% for image in images %}
+    <img src="{{ image.image_url }}">
+
+    <form method="POST" action="{{ url_for('edit_image', image_id=image._id) }}">
+        <input type="text" name="new_image_url" value="{{ image.image_url }}">
+        <input type="submit" value="Update">
+    </form>
+
+    <form method="POST" action="{{ url_for('delete_image', image_id=image._id) }}">
+        <input type="submit" value="Delete">
+    </form>
+
+{% endfor %}
+    
+
+{% endblock %}

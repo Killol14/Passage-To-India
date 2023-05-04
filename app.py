@@ -17,7 +17,12 @@ app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
 app.secret_key = os.environ.get("SECRET_KEY")
 
-mongo = PyMongo(app)
+mongo = PyMongo(app),
+
+from pymongo import MongoClient
+
+client = MongoClient('<mongo_uri>')
+db = client['<upload_image>']
 
 
 @app.route("/")
@@ -135,31 +140,27 @@ def add_task():
     categories = mongo.db.categories.find().sort("category_name", 1)
     return render_template("add_task.html", categories=categories)
 #------------------------------------------------------
-@app.route('/add-image', methods=['GET', 'POST'])
-def add_image():
-    if request.method == 'POST':
-        # Save the image to the database
-        image = request.files['image']
-        images.insert_one({"filename": image.filename, "data": image.read()})
-        return redirect(url_for('dashboard'))
-    else:
-        return render_template('add_image.html')
-
-
+@app.route('/upload_image', methods=["GET", "POST"])
 def upload_image():
-    if request.method == 'POST':
-        # Get the uploaded image file
-        image = request.files['image']
+    return render_template('upload_image.html')
 
-        # Store the image in MongoDB
-        image_data = image.read()
-        mongo.db.images.insert_one({'image': image_data}).inserted_id
+    # check if the post request has a file part
+    if 'image' not in request.files:
+        return 'No image uploaded'
 
-        # Display a success message
-        return 'Image uploaded with ID: ' + str(image_id)
-    else:
-        # Display the image upload form
-        return render_template("add_task.html", categories=categories)
+    image = request.files['image']
+    # save the uploaded image to the server
+    image.save('/path/to/save/image')
+  
+    # save the image URL to MongoDB database
+    db.categorylist.insert_one({'image_url': '/path/to/save/image'})
+
+    return 'Image uploaded successfully'
+
+@app.route('/category_list')
+def category_list():
+    images = db.images.find().sort("upload_image", 1)
+    return render_template('category_list.html', images=images)
 
 
 @app.route('/add-map', methods=['GET', 'POST'])
@@ -172,6 +173,8 @@ def add_map():
         return redirect(url_for('dashboard'))
     else:
         return render_template('add_map.html')
+
+
 #----------------------------------------------------
 @app.route("/edit_task/<task_id>", methods=["GET", "POST"])
 def edit_task(task_id):
