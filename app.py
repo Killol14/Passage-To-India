@@ -17,12 +17,10 @@ app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
 app.secret_key = os.environ.get("SECRET_KEY")
 
-mongo = PyMongo(app),
+mongo = PyMongo(app)
 
-from pymongo import MongoClient
-
-client = MongoClient('<mongo_uri>')
-db = client['<upload_image>']
+client = MongoClient(os.environ.get("MONGO_URI"))
+db = client[os.environ.get("MONGO_DBNAME")]
 
 
 @app.route("/")
