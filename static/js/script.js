@@ -46,5 +46,30 @@ function validateMaterializeSelect() {
     });
 }
 
-
+function previewImages() {
+    var preview = document.querySelector('#image-preview');
+    var files = document.querySelector('#image-upload').files;
+  
+    if (files.length > 4) {
+      alert('Please select no more than 4 images.');
+      return;
+    }
+  
+    preview.innerHTML = '';
+  
+    for (var i = 0; i < files.length; i++) {
+      var reader = new FileReader();
+      reader.onloadend = function () {
+        var img = document.createElement('img');
+        img.src = reader.result;
+        preview.appendChild(img);
+      }
+  
+      if (files[i]) {
+        if (i < 4) { // only preview up to 4 images
+          reader.readAsDataURL(files[i]);
+        }
+      }
+    }
+  }
 
