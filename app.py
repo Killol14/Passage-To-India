@@ -18,9 +18,10 @@ app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
 app.secret_key = os.environ.get("SECRET_KEY")
 
 mongo = PyMongo(app)
-
+app.config["UPLOAD_IMAGE"] = os.environ.get("MONGO_DBNAME")
 client = MongoClient(os.environ.get("MONGO_URI"))
 db = client[os.environ.get("MONGO_DBNAME")]
+
 
 
 @app.route("/")
@@ -139,27 +140,31 @@ def add_task():
     categories = mongo.db.categories.find().sort("category_name", 1)
     return render_template("add_task.html", categories=categories)
 #------------------------------------------------------
-@app.route('/upload_image', methods=["GET", "POST"])
+@app.route('/upload_image',methods = ["GET","POST"])
 def upload_image():
-    return render_template('upload_image.html')
+	if request.method == "POST":
+		image = request.files['file']
 
-    # check if the post request has a file part
-    if 'image' not in request.files:
-        return 'No image uploaded'
+		if image.filename == '':
+			print("Image must have a file name")
+			return redirect(request.url)
 
-    image = request.files['image']
-    # save the uploaded image to the server
-    image.save('/path/to/save/image')
-  
-    # save the image URL to MongoDB database
-    db.categorylist.insert_one({'image_url': '/path/to/save/image'})
 
-    return 'Image uploaded successfully'
+		filename = secure_filename(image.filename)
 
-@app.route('/category_list')
-def category_list():
-    images = db.images.find().sort("upload_image", 1)
-    return render_template('category_list.html', images=images)
+		basedir = os.path.abspath(os.path.dirname(__file__))
+		image.save(os.path.join(basedir,app.config["UPLOAD_IMAGE"],filename))
+
+		return render_template("tasks.html",filename=filename)
+
+
+
+	return render_template('tasks.html')
+
+
+@app.route('/display/<filename>')
+def display_image(filename):
+	return redirect(url_for('static',filename = "/Images" + filename), code=301)
 
 
 @app.route('/add-map', methods=['GET', 'POST'])
@@ -229,7 +234,8 @@ def edit_category(category_id):
         submit = {
             "category_name": request.form.get("category_name")
         }
-        mongo.db.categories.update({"_id": ObjectId(category_id)}, submit)
+        mongo.db.categories.update_one({"_id": ObjectId(category_id)}, submit)
+      
         flash("Category Successfully Updated")
         return redirect(url_for("get_categories"))
 

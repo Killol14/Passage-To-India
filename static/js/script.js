@@ -46,6 +46,7 @@ function validateMaterializeSelect() {
     });
 }
 
+
 function previewImages() {
     var preview = document.querySelector('#image-preview');
     var files = document.querySelector('#image-upload').files;
@@ -72,4 +73,3 @@ function previewImages() {
       }
     }
   }
-
